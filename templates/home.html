@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martinez Task Manager - Stay Organized</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1E3C72, #2A5298);
+            color: white;
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-family: 'Poppins', sans-serif;
+        }
+        .hero {
+            max-width: 700px;
+            padding: 20px;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        .btn-custom {
+            background: #FFA726;
+            border: none;
+            padding: 14px 24px;
+            font-size: 20px;
+            border-radius: 30px;
+            color: white;
+            transition: 0.3s ease-in-out;
+            text-decoration: none;
+        }
+        .btn-custom:hover {
+            background: #FB8C00;
+        }
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Martinez Task Manager</h1>
+        <p>Boost your productivity, manage tasks effortlessly, and stay on top of your goals.</p>
+        <a href="{{ url_for('login') }}" class="btn btn-custom">Get Started</a>
+    </div>
+    <div class="footer">
+        <p>&copy; 2025 Martinez Task Manager. All Rights Reserved.</p>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
