@@ -24,7 +24,7 @@ Welcome to **Martinez Task Manager**, a simple and intuitive **task management s
 
 - **Frontend**: Bootstrap 5, HTML, CSS  
 - **Backend**: Python, Flask  
-- **Database**: SQLite (Can be upgraded to PostgreSQL)  
+- **Database**: PostgreSQL
 - **Authentication**: Flask-Login, Flask-WTF  
 - **Deployment**: Gunicorn, Heroku (Optional)  
 
