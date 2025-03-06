@@ -65,7 +65,11 @@
     <!-- Sidebar -->
     <div class="sidebar d-flex flex-column align-items-center">
         <h4>Dashboard</h4>
-        <img src="{{ url_for('static', filename='uploads/' + (current_user.profile_pic if current_user.profile_pic else 'default.jpg')) }}" alt="Profile Picture" class="profile-pic">
+        <img src="{{ user.profile_pic }}" alt="Profile Pic" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid white;">
+
+
+
+
         <p>{{ current_user.username }}</p>
         
         <!-- Upload Profile Picture Form -->
