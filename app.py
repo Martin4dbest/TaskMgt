@@ -204,6 +204,14 @@ def complete_task(task_id):
     return redirect(url_for('dashboard'))
 
 
+@app.route("/tasks")
+@login_required
+def tasks():
+    tasks = Task.query.filter_by(user_id=current_user.id).all()
+    return render_template('tasks.html', tasks=tasks, user=current_user)
+
+
+
 @app.route("/profile", methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -222,5 +230,12 @@ def profile():
     return render_template("profile.html", form=form, user=current_user)
 
 # Run App
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
+    
+"""
 if __name__ == "__main__":
     app.run(debug=True)
+
+"""

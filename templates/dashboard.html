@@ -73,11 +73,12 @@
             <input type="file" name="profile_pic" accept="image/*" class="form-control mb-2">
             <button type="submit" class="btn btn-sm btn-primary">Upload</button>
         </form>
-        
-        <a href="#">Home</a>
-        <a href="#">Tasks</a>
-        <a href="#">Settings</a>
+
+        <a href="{{ url_for('home') }}" target="_blank">Home</a>
+        <a href="{{ url_for('tasks') }}" target="_blank">Tasks</a>
         <a href="{{ url_for('logout') }}" class="text-danger">Logout</a>
+        
+
     </div>
 
     <!-- Main Content -->
