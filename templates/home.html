@@ -63,11 +63,15 @@
             margin: 5px;
             border-radius: 8px;
             width: 200px;
+            min-height: 120px; /* Ensures all boxes are same size */
             transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
             text-align: center;
             border-left: 4px solid;
             font-weight: 500;
             font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .feature-box h4 {
