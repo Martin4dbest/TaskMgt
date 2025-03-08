@@ -13,6 +13,25 @@
             <div class="col-md-6 col-lg-5">
                 <div class="card shadow-lg border-0 rounded-4">
                     <div class="card-body p-4">
+                        
+                        <!-- Flash Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                                
+                                <!-- Auto Redirect after 5 seconds -->
+                                <script>
+                                    setTimeout(function() {
+                                        window.location.href = "{{ url_for('login') }}";
+                                    }, 5000);
+                                </script>
+                            {% endif %}
+                        {% endwith %}
+                        
                         <h3 class="text-center text-primary mb-4">Login</h3>
                         <form method="POST">
                             {{ form.hidden_tag() }}
@@ -29,6 +48,7 @@
                             </div>
                         </form>
                         <div class="text-center mt-3">
+                            <p><a href="{{ url_for('forgot_password') }}" class="text-danger">Forgot Password?</a></p>
                             <p>Don't have an account? 
                                 <a href="{{ url_for('register') }}" class="text-primary">Register</a>
                             </p>

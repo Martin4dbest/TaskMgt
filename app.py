@@ -1,4 +1,5 @@
 import os
+import uuid
 import boto3
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
@@ -11,6 +12,9 @@ from flask_wtf.file import FileAllowed
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
+
+
 
 # Load environment variables
 load_dotenv()
@@ -44,6 +48,10 @@ migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+
+
+
+
 
 # Models
 class User(db.Model, UserMixin):
@@ -95,6 +103,103 @@ class TaskForm(FlaskForm):
 class ProfileUpdateForm(FlaskForm):
     profile_pic = FileField("Update Profile Picture", validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], "Images only!")])
     submit = SubmitField("Update")
+
+
+
+class ResetPasswordForm(FlaskForm):
+    token = StringField("Token", validators=[DataRequired()])
+    password = PasswordField("New Password", validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField("Reset Password")
+
+
+class PasswordResetToken(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    token = db.Column(db.String(100), unique=True, nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.utcnow() + timedelta(hours=1))
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Forms
+class ForgotPasswordForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    submit = SubmitField("Request Reset")
+
+class ResetPasswordForm(FlaskForm):
+    token = StringField("Reset Token", validators=[DataRequired()])
+    password = PasswordField("New Password", validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField("Reset Password")
+
+
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        user = User.query.filter_by(email=email).first()
+        
+        if not user:
+            flash("User not found!", "danger")
+            return redirect(url_for('forgot_password'))
+
+        # Generate a unique token
+        token = str(uuid.uuid4())
+
+        # Save token in database with expiration time
+        reset_token = PasswordResetToken(user_id=user.id, token=token, expires_at=datetime.utcnow() + timedelta(hours=1))
+        db.session.add(reset_token)
+        db.session.commit()
+
+        flash(f"Your reset token: {token}", "info")
+
+        # ✅ Redirect correctly with token
+        return redirect(url_for('reset_password', token=token))
+    
+    return render_template("forgot_password.html", form=form)
+
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    form = ResetPasswordForm(token=token)
+
+    if form.validate_on_submit():
+        new_password = form.password.data
+        confirm_password = form.confirm_password.data
+
+        if new_password != confirm_password:
+            flash("Passwords do not match. Please try again.", "danger")
+            return redirect(url_for('reset_password', token=token))
+
+        reset_token = PasswordResetToken.query.filter_by(token=token).first()
+
+        if not reset_token:
+            flash("Invalid or expired token.", "danger")
+            return redirect(url_for('forgot_password'))
+
+        if reset_token.expires_at < datetime.utcnow():
+            db.session.delete(reset_token)
+            db.session.commit()
+            flash("This reset link has expired. Please request a new one.", "danger")
+            return redirect(url_for('forgot_password'))
+
+        user = User.query.get(reset_token.user_id)
+        if user:
+            user.password = generate_password_hash(new_password)
+            db.session.delete(reset_token)
+            db.session.commit()
+
+            flash("Password changed successfully! Redirecting to login...", "success")
+            return redirect(url_for('login'))
+
+    return render_template('reset_password.html', form=form, token=token)
+
+
 
 # Upload to S3
 def upload_file_to_s3(file, bucket_name, folder="profile_pics"):
@@ -208,8 +313,6 @@ def tasks():
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
-
 
 
 if __name__ == "__main__":
